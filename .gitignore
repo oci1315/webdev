@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# ne pas charger les travaux des élèves sur GitHub
+travaux
