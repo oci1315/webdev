@@ -39,6 +39,24 @@ def complex_list(data):
         return '<ul>{items}</ul>'.format(items=html)
         
         
+def complex_list2(data):
+    '''
+    
+    >>> data = ['Chaussures', ['Fruits', ['Oranges', 'Pommes']], ['Légumes', ['Poireaux', 'Choux']]]
+    >>> complex_list2(data)
+    
+    
+    '''
+    
+    if data == []:
+        return ''
+    elif isinstance(data, str):
+        return '<li>{item}</li>'.format(item=data[0])
+    elif isinstance(data, list) and len(data) > 1:
+        return '<li>' + complex_list2(data[1:]) + '</li>'
+
+        
+        
 ######################################################################################
 ## Fonctions de tests
 ######################################################################################
@@ -52,7 +70,7 @@ def commission_simple():
 ### Exercice 2 de génération de HTML (liste hiérarchisée)
 def commission_complexe():
     doc = base_html('Liste de commission hiérarchisée')
-    return doc.render(context={'content' : complex_list(commissions2)})
+    return doc.render(context={'content' : complex_list2(commissions2)})
     
 
 def longue_liste():
