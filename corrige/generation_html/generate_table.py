@@ -33,21 +33,27 @@ class Element(object):
     def html_attrs(self, attrs=None):
         attrs = attrs or self.attrs
         #print("attrs : ", attrs, self.attrs, self)
-        return ' '.join(['{attr}="{value}"'.format(attr, value) for (attr, value) in attrs.items()])
+        if len(attrs) == 0:
+            return ''
+        else:
+            return ' ' + ' '.join(['{attr}="{value}"'.format(attr=attr, value=value) for (attr, value) in attrs.items()])
         
-    def html(self):
+    def html(self, indent=0):
+        
+        # print('html(): tag', self.tag)
 
         if self.void:
-            template = '<{tag} {attrs} />'
+            template = '<{tag}{attrs} />'
         else:
-            template = '<{tag} {attrs}>{content}</{tag}>'
+            template = '{indent}<{tag}{attrs}>\n{content}\n{indent}</{tag}>'
 
-        content = '\n'.join([child.html() for child in self.childs])
+        content = '\n'.join([child.html(indent=indent+1) for child in self.childs])
             
         html_string = template.format(
             tag=self.tag,
             attrs=self.html_attrs(),
-            content=content
+            content=content,
+            indent=indent*'   '
         )
         
         #print(html_string)
@@ -67,6 +73,13 @@ class Element(object):
             c.root = self.root
         self.childs += childs
         
+    def _add_to(self, parent):
+        parent._add_child(self)
+        return parent
+        
+    def __lt__(self, parent):
+        return self._add_to(parent)
+        
     def __gt__(self, childs):
         if isinstance(childs, list):
             self._add_childs(childs)
@@ -79,10 +92,11 @@ class Element(object):
 class Text(Element):
     
     def __init__(self, text):
+        super().__init__(self)
         self.text = text
 
-    def html(self):
-        return self.text
+    def html(self, indent=0):
+        return indent*'   ' + self.text
         
     def __str__(self):
         return 'Text("{text}")'.format(text=self.text)
@@ -125,6 +139,25 @@ class Td(Element):
         self.tag = 'td'
         
         
+class E(object):
+    
+    def __init__(self, elements):
+        self.elements = elements
+        
+    def _from_generator(self, generator):
+        try:
+            while True:
+                self.elements.append(next(generator))
+        except:
+            pass
+        
+
+    def __lt__(self, parent):
+        for e in self.elements:
+            e._add_to(parent)
+        return parent
+        
+        
 headers = ['Colonne 1', 'Colonne 2']
 products = [
     ('Genèse', '1'),
@@ -135,18 +168,30 @@ products = [
 # thead = THead() > Tr() > [Th() > Text(field) for field in headers]
 # tbody = TBody() > [Tr() > [Td() > Text(field) for field in product] for product in products]
 
-thead = (THead() > Tr() > [Th() > Text(field) for field in headers]).root
-tbody = (TBody() > [Tr() > [Td() > Text(field) for field in product] for product in products]).root
+# thead = (THead() > Tr() > [Th() > Text(field) for field in headers]).root
+# tbody = (TBody() > [Tr() > [Td() > Text(field) for field in product] for product in products]).root
 
-# thead = THead(Tr([Th() > Text(field) for field in headers]))
-# tbody = TBody( [ Tr( [Td() > Text(field) for field in product] for product in products])
+# Vraiment illisible
+# thead = THead(
+#             Tr(
+#                 Th() > field for field in headers))
+# tbody = TBody(
+#             Tr(
+#                 Td() > field for field in product] for product in products)
 
+thead = E( [ Text(field) < Th() for field in headers ] ) < Tr() < THead()
 print("thead", thead)
-#print("tbody", tbody)
 
-table = Table({
+tbody = TBody()
+for product in products:
+    E( [ Text(field) < Td() for field in product ] ) < Tr() < tbody
+        
+
+table = E([thead, tbody]) < Table({
     'id' : "livres",
     'class' : "produits"
-}) > [thead, tbody]
+})
 
 print(table.html())
+
+print((E(Td() for i in range(3)) < Tr() < Table()).html())
