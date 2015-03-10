@@ -26,7 +26,7 @@ def generate_table_02(headers, products):
 def main():        
     headers = TableExo.headers
     products = TableExo.products
-    print(generate_table_02(headers, products).html())
+    print(generate_table_02(headers, products).html(minify=False))
 
 
 if __name__ == '__main__':

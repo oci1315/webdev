@@ -15,6 +15,11 @@ class E(object):
         self.parent = None
         # référence à la racine de l'arbre ... ne fonctionne pas vraiment
         self.root = self
+        # indique si le tag doit être affiché sur une seule ligne (th, td, li, ...)
+        self.oneline = False
+        
+        if self.tag in ['th', 'td', 'li', 'span', 'b', 'i', 'u', 'em', 'strong']:
+            self.oneline = True
         
     def __str__(self):
         return 'Element({tag}, {attrs}) > ({childs})'.format(
@@ -38,14 +43,13 @@ class E(object):
         if self.void:
             template = '<{tag}{attrs} />'
         else:
-            template = '{indent}<{tag}{attrs}>{cr}{content}{cr}{indent}</{tag}>'
+            template = '{startindent}<{tag}{attrs}>{cr}{content}{cr}{endindent}</{tag}>'
 
-        if minify:
+        if minify or self.oneline:
             cr = ''
-            char_indent = ''
         else:
             cr= '\n'
-            char_indent = indent*'   '
+        char_indent = indent*'   '
             
         content = cr.join([child.html(indent=indent+1, minify=minify) for child in self.childs])
             
@@ -53,7 +57,8 @@ class E(object):
             tag=self.tag,
             attrs=self.html_attrs(),
             content=content,
-            indent=char_indent,
+            startindent=char_indent * int(not minify),
+            endindent=char_indent * int(not minify and not self.oneline),
             cr=cr
         )
         
@@ -92,10 +97,14 @@ class T(E):
     
     def __init__(self, text):
         super().__init__(self)
-        self.text = text
+        self.text = str(text)
 
     def html(self, indent=0, minify=False):
-        return indent*'   ' + self.text
+        if minify or self.parent.oneline:
+            char_indent = ''
+        else:
+            char_indent = indent*'   '
+        return char_indent + self.text
         
     def __str__(self):
         return 'Text("{text}")'.format(text=self.text)
