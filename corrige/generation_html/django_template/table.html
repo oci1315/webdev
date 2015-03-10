@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+</head>
+<body>
+
+    <h1>{{title}}</h1>
+
+    <table>
+        <caption>{{table_caption}}</caption>
+        <thead>
+            <tr>
+            {% for field in fields %}
+                <li>{{field}}</li>
+            {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                {% for field in product %}
+                    <li>{{field}}</li>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
