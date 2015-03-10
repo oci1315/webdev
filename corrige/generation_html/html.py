@@ -57,36 +57,34 @@ class Element(object):
             cr=cr
         )
         
-        #print(html_string)
-        
         return html_string
 
         
-    def _add_child(self, child):
+    def add_child(self, child):
         child.parent = self
         child.root = self.root 
         self.childs.append(child)
         
-    def _add_childs(self, childs):
+    def add_childs(self, childs):
         # print(childs)
         for c in childs:
             c.parent = self
             c.root = self.root
         self.childs += childs
         
-    def _add_to(self, parent):
-        parent._add_child(self)
+    def add_to(self, parent):
+        parent.add_child(self)
         return parent
         
     def __lt__(self, parent):
-        return self._add_to(parent)
+        return self.add_to(parent)
         
     def __gt__(self, childs):
         if isinstance(childs, list):
-            self._add_childs(childs)
+            self.add_childs(childs)
             return self
         else:
-            self._add_child(childs)
+            self.add_child(childs)
             return childs
         
             
@@ -155,5 +153,5 @@ class E(object):
 
     def __lt__(self, parent):
         for e in self.elements:
-            e._add_to(parent)
+            e.add_to(parent)
         return parent
