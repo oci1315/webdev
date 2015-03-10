@@ -11,28 +11,15 @@ from utils import *
 from donnee import TableExo
 from html import *
 
-def generate_table_02(headers, products):
-
-    thead = E( [ Text(field) < Th() for field in headers ] ) < Tr() < THead()
-    tbody = TBody()
-    for product in products:
-        E( [ Text(field) < Td() for field in product ] ) < Tr() < tbody
-
-    table = E([thead, tbody]) < Table({
-        'id' : "livres",
-        'class' : "produits"
-    })
-    
-    return table
     
 def generate_table_02(headers, products):
 
-    thead = L( [ T(field) < E('th') for field in headers ] ) < E('tr') < E('thead')
+    thead = ElementList( [ T(field) < E('th') for field in headers ] ) < E('tr') < E('thead')
     tbody = E('tbody')
     for product in products:
-        E( [ T(field) < E('td') for field in product ] ) < E('tr') < tbody
+        ElementList( [ T(field) < E('td') for field in product ] ) < E('tr') < tbody
 
-    table = E([thead, tbody]) < E('table', {
+    table = ElementList([thead, tbody]) < E('table', {
         'id' : "livres",
         'class' : "produits"
     })

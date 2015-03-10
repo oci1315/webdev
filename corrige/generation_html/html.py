@@ -1,6 +1,6 @@
-class Element(object):
+class E(object):
     
-    def __init__(self, attrs=None, void=False):
+    def __init__(self, tag, attrs=None, void=False):
 
         # dictionnaire des attributs de l'élément
         self.attrs = attrs or {}
@@ -8,7 +8,7 @@ class Element(object):
         # qui n'ont pas de balise fermante
         self.void = void
         # balise correspondant à l'élément
-        self.tag = None
+        self.tag = tag
         # une liste des éléments enfants dans l'arbre DOM
         self.childs = []
         # référence à l'élément parent dans l'arbre DOM
@@ -88,7 +88,7 @@ class Element(object):
             return childs
         
             
-class Text(Element):
+class T(E):
     
     def __init__(self, text):
         super().__init__(self)
@@ -100,45 +100,9 @@ class Text(Element):
     def __str__(self):
         return 'Text("{text}")'.format(text=self.text)
 
-
-class Table(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'table'
-        
-class THead(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'thead'
-        
-class TBody(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'tbody'
-        
-class Tr(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'tr'
-        
-class Th(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'th'
-        
-class Td(Element):
-    
-    def __init__(self, attrs=None):
-        super().__init__(attrs)
-        self.tag = 'td'
         
         
-class E(object):
+class ElementList(object):
     
     def __init__(self, elements):
         self.elements = elements
