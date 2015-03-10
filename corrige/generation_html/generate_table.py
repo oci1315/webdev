@@ -6,12 +6,9 @@
 ## URL : http://donner-online.ch/oci/webdev/...
 ## année : 2014 - 2015
 
-from template import FileTemplate, StringTemplate
-from utils import *
 from donnee import TableExo
 from html import *
 
-    
 def generate_table_02(headers, products):
 
     thead = ElementList( [ T(field) < E('th') for field in headers ] ) < E('tr') < E('thead')
@@ -29,7 +26,7 @@ def generate_table_02(headers, products):
 def main():        
     headers = TableExo.headers
     products = TableExo.products
-    print(generate_table_02(headers, products).html(minify=False))
+    print(generate_table_02(headers, products).html())
 
 
 if __name__ == '__main__':
