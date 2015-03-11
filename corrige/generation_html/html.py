@@ -80,10 +80,14 @@ class E(object):
             
         content = cr.join([child.html(indent=indent+1, minify=minify) for child in self.childs])
         
+        char_indent = indent*'   '
+            
         if self.content_text:
+            if not self.oneline and not minify:
+                content += char_indent + '   '
             content += self.content_text
             
-        char_indent = indent*'   '
+                
         html_string = template.format(
             tag=self.tag,
             attrs=self.html_attrs(),
@@ -123,8 +127,11 @@ class E(object):
             self.add_child(childs)
             return childs
             
-    def __add__(self, sibling):
-        return ElementList([self, sibling])
+    def __add__(self, siblings):
+        if isinstance(siblings, list):
+            return ElementList([self] + siblings)
+        else:
+            return ElementList([self] + [siblings])
         
             
 class T(E):
