@@ -1,4 +1,3 @@
-from html import E
 
 class A (E):
     

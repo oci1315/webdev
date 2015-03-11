@@ -26,17 +26,25 @@ from html import *
     
 def generate_table_02(headers, products):
 
-    thead = ElementList( [ T(field) < Th() for field in headers ] ) < Tr() < Thead()
+    thead = ElementList( [ Th().text(field) for field in headers ] ) < Tr() < Thead()
     tbody = Tbody()
     for product in products:
-        ElementList( [ T(field) < Td() for field in product ] ) < Tr() < tbody
+        ElementList( [ Td().text(field) for field in product ] ) < Tr() < tbody
 
     table = ElementList([thead, tbody]) < Table({
         'id' : "livres",
         'class' : "produits"
     })
     
-    return table
+    content = H1().text('Titre de la page')
+    content += table + Img({'src' : 'http://image.com/1234'}) < Div({'class': 'inventaire'})
+    
+    doc = ElementList([
+        Meta({'charset': 'utf-8'}) + Title().text('Inventaire') < Head(),
+        content < Body()
+    ]) < Html()
+
+    return doc
 
 def main():        
     headers = TableExo.headers

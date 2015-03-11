@@ -1,3 +1,21 @@
+
+'''
+
+html.py : API de génération de HTML en construisant la représentation arborescente
+
+TODO
+====
+
+*   Il faudrait encore distinguer entre les éléments qui peuvent contenir des fils
+    et les éléments "terminaux" qui ne peuvent contenir aucun élément, comme les 
+
+'''
+
+oneline_elements = [
+    'th', 'td', 'li', 'span', 'b', 'i', 'u', 'em', 'strong', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 
+]
+
+
 class E(object):
     
     def __init__(self, tag, attrs=None, void=False):
@@ -17,8 +35,12 @@ class E(object):
         self.root = self
         # indique si le tag doit être affiché sur une seule ligne (th, td, li, ...)
         self.oneline = False
+        # indique contenu de l'élément
+        self.content_text = None
         
-        if self.tag in ['th', 'td', 'li', 'span', 'b', 'i', 'u', 'em', 'strong']:
+        # cette condition doit être réécrite ... il y a d'autres tags à 
+        # écrire que sur une ligne
+        if self.tag in oneline_elements:
             self.oneline = True
         
     def __str__(self):
@@ -27,6 +49,14 @@ class E(object):
             attrs=self.attrs,
             childs=' + '.join([str(c) for c in self.childs]),
         )
+        
+    def text(self, content_text=None):
+        if content_text is None:
+            return self.content_text
+        else:
+            self.content_text = str(content_text)
+            # pour permettre le chaînage
+            return self
         
     def html_attrs(self, attrs=None):
         attrs = attrs or self.attrs
@@ -38,21 +68,22 @@ class E(object):
         
     def html(self, indent=0, minify=False):
         
-        # print('html(): tag', self.tag)
-
         if self.void:
-            template = '{tag}{attrs} /'
+            template = '{startindent}<{tag}{attrs} />'
         else:
-            template = '{startindent}<{tag}{attrs}>{cr}{content}{cr}{endindent}</{tag}'
+            template = '{startindent}<{tag}{attrs}>{cr}{content}{cr}{endindent}</{tag}>'
 
         if minify or self.oneline:
             cr = ''
         else:
             cr= '\n'
-        char_indent = indent*'   '
             
         content = cr.join([child.html(indent=indent+1, minify=minify) for child in self.childs])
+        
+        if self.content_text:
+            content += self.content_text
             
+        char_indent = indent*'   '
         html_string = template.format(
             tag=self.tag,
             attrs=self.html_attrs(),
@@ -91,6 +122,9 @@ class E(object):
         else:
             self.add_child(childs)
             return childs
+            
+    def __add__(self, sibling):
+        return ElementList([self, sibling])
         
             
 class T(E):
@@ -114,7 +148,7 @@ class T(E):
 class ElementList(object):
     
     def __init__(self, elements):
-        self.elements = elements
+        self.elements = [e for e in elements if e is not None]
         
     def _from_generator(self, generator):
         try:
@@ -128,6 +162,10 @@ class ElementList(object):
         for e in self.elements:
             e.add_to(parent)
         return parent
+        
+        
+    def html(self, *args, **kwargs):
+        return '\n'.join([e.html(*args, **kwargs) for e in self.elements])
         
         
 html_elements = [
