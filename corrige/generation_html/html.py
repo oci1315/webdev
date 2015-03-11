@@ -16,6 +16,8 @@ oneline_elements = [
 ]
 
 
+
+
 class E(object):
     
     def __init__(self, tag, attrs=None, void=False):
@@ -152,19 +154,12 @@ class T(E):
 
         
         
+        
 class ElementList(object):
     
     def __init__(self, elements):
         self.elements = [e for e in elements if e is not None]
         
-    def _from_generator(self, generator):
-        try:
-            while True:
-                self.elements.append(next(generator))
-        except:
-            pass
-        
-
     def __lt__(self, parent):
         for e in self.elements:
             e.add_to(parent)
@@ -173,6 +168,22 @@ class ElementList(object):
         
     def html(self, *args, **kwargs):
         return '\n'.join([e.html(*args, **kwargs) for e in self.elements])
+        
+        
+# class L(list):
+    
+
+#     def __lshift__(self, parent):
+#         for e in self:
+#             e.add_to(parent)
+#         return parent
+        
+        
+#     def html(self, *args, **kwargs):
+#         return '\n'.join([e.html(*args, **kwargs) for e in self.elements])  
+        
+# import builtins
+# builtins.list = L
         
         
 html_elements = [
