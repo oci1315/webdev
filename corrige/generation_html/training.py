@@ -9,6 +9,8 @@ url : http://donner-online.ch/oci/webdev/generate/training/exos.html
 '''
 
 from csudoci.html.html import *
+from csudoci.html.template import FileTemplate
+from utils import write_to_file
 
 class Etudiant(object):
 
@@ -35,5 +37,16 @@ def generate_02(etudiants):
         ]) < Li() < ul
 
     return ul.html()
+    
+def full_page():
+    title = 'Liste des étudiants'
+    
+    doc = FileTemplate('base.html')
+    html = doc.render({
+        'title' : title,
+        'content' : generate_02(etudiants2)
+    })
+    write_to_file('output/liste_etudiants.html', html)
 
 print(generate_02(etudiants2))
+full_page()
