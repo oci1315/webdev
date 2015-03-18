@@ -5,7 +5,7 @@
 ## http://www.donner-online.ch/oci/manuel/html/html_parsing/html_parsing.html
 
 from html.parser import HTMLParser
-from stack import Stack
+from csudoci.ds.stack import Stack
 
 class CheckBalancedHTMLParser(HTMLParser):
 
@@ -45,9 +45,13 @@ def test_balanced(html):
 
     p = CheckBalancedHTMLParser()
     p.feed(html)
-
     return p.is_balanced()
+    
+tests = [
+    '''<ul><li>du texte</li><li></li></ul>''', 
+    '''<ul><li></li><li></ul>''', 
+    '''<ul><li></li></li></ul>''', 
+]
 
-print(test_balanced(html='''<ul><li>du texte</li><li></li></ul>'''))
-test_balanced(html='''<ul><li></li><li></ul>''')
-test_balanced(html='''<ul><li></li></li></ul>''')
+for t in tests:
+    print(test_balanced(html=t))

@@ -1,7 +1,7 @@
 from html.parser import HTMLParser
-from stack import Stack
-from tree import Tree
-from html_elements import Tag, SimpleTag, Text
+
+from csudoci.ds.stack import Stack
+from csudoci.html.html import E, T
 
 class HTMLParseError(Exception):
 
@@ -19,7 +19,7 @@ class HTMLTreeParser(HTMLParser):
         for (attr, value) in attrs:
             attr_dict[attr] = value
             
-        self.stack.push(Tree(Tag(tag, attr_dict)))
+        self.stack.push(E(tag, attr_dict))
 
 
     def handle_endtag(self, tag):        
@@ -37,7 +37,7 @@ class HTMLTreeParser(HTMLParser):
         # de la pile. Il faut déjà faire la vérification avant
         # d'essayer de dépiler des éléments
         top = self.stack.peek()
-        opening_tag_on_top = (top.getRootVal().tagname == tag)
+        opening_tag_on_top = (top.tag == tag)
 
         # on dépile tous les éléments jusqu'à ce qu'on rencontre au
         # sommet de la pile la balise ouvrante correspondant à la
@@ -51,7 +51,7 @@ class HTMLTreeParser(HTMLParser):
             # tagname)
             try:
                 top = self.stack.peek()
-                opening_tag_on_top = (top.getRootVal().tagname == tag)
+                opening_tag_on_top = (top.tag == tag)
             except:
                 pass
                 
@@ -62,7 +62,7 @@ class HTMLTreeParser(HTMLParser):
         tree = self.stack.pop()
 
         while not tmp_stack.is_empty():
-            tree.insertSubTree(tmp_stack.pop())
+            tree.add_child(tmp_stack.pop())
 
         self.stack.push(tree)
         
@@ -72,12 +72,12 @@ class HTMLTreeParser(HTMLParser):
         for (attr, value) in attrs:
             attr_dict[attr] = value
 
-        self.stack.push(Tree(SimpleTag(tag, attr_dict)))
+        self.stack.push(E(tag, attr_dict))
 
     def handle_data(self, data):
-        self.stack.push(Tree(Text(data)))
+        self.stack.push(T(data))
 
-    def get_html_tree(self):
+    def get_tree(self):
         if self.stack.size() == 1:
             return self.stack.pop()
         else:
@@ -88,7 +88,7 @@ def test(html):
     p = HTMLTreeParser()
     p.feed(html)
 
-    p.get_html_tree().draw()
+    p.get_tree().draw()
     
 
 test('<ul><li>Texte 1</li><li>Texte 2</li></ul>')
