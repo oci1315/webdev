@@ -1,5 +1,5 @@
 from csudoci.ds.stack import Stack
-from csudoci.html.html import *
+from csudoci.html.html import E, T
 
 from html.parser import HTMLParser
 
