@@ -42,11 +42,42 @@ class HTMLTreeParser(HTMLParser):
         else:
             return None
             
-def test(html):
+def test_parser(html):
     p = HTMLTreeParser()
     p.feed(html)
 
     p.get_tree().draw()
 
-html_code = '<ul><li>Texte 1</li><li>Texte 2</li></ul>'
-test(html_code)
+def test():
+    html1 = '''
+        <ul>
+            <li>Texte 1</li>
+            <li>Texte 2</li>
+        </ul>'''
+    html2 = '''
+        <a href="http://www.example.com">Lien bidon</a>
+        <ul>
+            <li>Texte 1</li>
+            <li>Texte 2</li>
+        </ul>'''
+    html3 = '''
+        <div>
+            <a href="http://www.example.com">Lien bidon</a>
+            <ul>
+                <li>Texte 1</li>
+                <li>Texte 2</li>
+            </ul>
+        </div>'''
+        
+    html_codes = [html1, html2, html3]
+    
+    for html in html_codes:
+        try:
+            print(80*'=')
+            test_parser(html)
+        except Exception as e:
+            print("Impossible de transformer le code HTML suivant en arbre")
+            print(html)
+
+if __name__ == '__main__':
+    test()
